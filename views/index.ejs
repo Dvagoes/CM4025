@@ -3,20 +3,27 @@
 
 <head>
     <title>Justice for Ugly Animals - Home</title>
-    <style></style>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/post.css">
 </head>
 
 <body>
+    <%- include('./partials/header') %>
+        <div id="post-wall">
+            <% posts.forEach((post)=> {%>
+                <div class="post-container">
+                    <div class="post-image-container">
+                        <img class="post-image" src = <%=post.img%>>
+                    </div>
+                    <div class="post-title"><%= post.post_title %></div>
+                    <div class="post-footer">
+                        <div class="post-score"><%= post.score %></div>
+                        <div class="post-date"><%= post.datetime %></div>
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+    <%- include('./partials/footer') %>
 
-    <%- include('partials/header') %>
-    <div id="post-wall">
-        <% posts.array.forEach((post) => {
-            <div class="post-container">
-                    <%=post.content%>
-            </div>
-        }); %>
-    </div>
-    <%- include('partials/footer') %>
 </body>
 
 </html>
