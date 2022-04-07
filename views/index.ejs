@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Justice for Ugly Animals - Home</title>
+    <style></style>
+</head>
+
+<body>
+
+    <%- include('partials/header') %>
+    <div id="post-wall">
+        <% posts.array.forEach((post) => {
+            <div class="post-container">
+                    <%=post.content%>
+            </div>
+        }); %>
+    </div>
+    <%- include('partials/footer') %>
+</body>
+
+</html>
