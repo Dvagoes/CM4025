@@ -114,9 +114,12 @@ app.post('/auth', function (request, response) {
     }
 });
 
-app.post('/logout', function (req, res) {
-    req.session.loggedin = false;
-    req.session.username = null;
+app.get('/logout', function (req, res) {
+    if (req.session.username) {
+        delete req.session.username;
+        req.session.loggedin = false;
+        res.redirect('/')
+    }
 });
 
 app.get('/login', function (req, res) {
