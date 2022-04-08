@@ -36,14 +36,13 @@ app.get('/', function (req, res) {
     db.collection('Posts').find(req.body).toArray(function (err, result) {
         if (err) throw err;
         posts = JSON.parse(JSON.stringify(result));
-        db.collection('UserData').findOne({ username: 'admin' }, function (err, result) {
-            if (err) throw err;
-            user = JSON.parse(JSON.stringify(result))
-            res.render('index', {
-                posts: posts,
-                user: user
-            });
-        })
+        if (req.session.loggedin) {
+
+        }
+        res.render('index', {
+            posts: posts,
+            session: req.session
+        });
 
     });
 });
@@ -52,7 +51,7 @@ app.get('/game', function (req, res) {
     db.collection('Posts').find(req.body).toArray(function (err, result) {
 
         posts = JSON.parse(JSON.stringify(result));
-        res.render('index', {
+        res.render('game', {
             posts: posts
         });
     });
@@ -62,7 +61,7 @@ app.get('/profile', function (req, res) {
     db.collection('UserData').find(req.body).toArray(function (err, result) {
         if (err) throw err;
         users = JSON.parse(JSON.stringify(result));
-        res.render('index', {
+        res.render('profile', {
             posts: posts
         });
     });
@@ -94,7 +93,7 @@ app.post('/auth', function (request, response) {
         db.collection("UserData").find({
             username: username,
             password: password
-        }).toArray(function (error, result) {
+        }).toArray(function (error, results) {
             // If there is an issue with the query, output the error
             if (error) throw error;
             // If the account exists
@@ -113,4 +112,13 @@ app.post('/auth', function (request, response) {
         response.send('Please enter Username and Password!');
         response.end();
     }
-})
+});
+
+app.post('/logout', function (req, res) {
+    req.session.loggedin = false;
+    req.session.username = null;
+});
+
+app.get('/login', function (req, res) {
+    res.render('./partials/login');
+});

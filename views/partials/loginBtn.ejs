@@ -1,0 +1,13 @@
+<!-- views/partials/userInfo.ejs -->
+<link rel="stylesheet" type="text/css" href="./stylesheets/loginBtn.css">
+
+<div class="login-pane">
+    <div class="login-btn" onclick="openLogin()">Login</div>
+</div>
+
+<script>
+    function openLogin() {
+        $body = $('body');
+        $body.load('/login');
+    }
+</script>   

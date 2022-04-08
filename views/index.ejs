@@ -4,6 +4,7 @@
 <head>
     <title>Justice for Ugly Animals - Home</title>
     <link rel="stylesheet" type="text/css" href="./stylesheets/post.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -38,10 +39,11 @@
             <a class="plus"></a>
         </div>
 
-        <% if (loggedin) {%>
-            <% include('./partials/userInfo')%>
+        <% if (session.loggedin) {%>
+            <%-include('./partials/userInfo')%>
                 <% } else {%>
-                    <% include('./partials/loginPane')%>
+                    <%-include('./partials/loginBtn')%>
+                    <%}%>
                         <%- include('./partials/footer') %>
 
 </body>
