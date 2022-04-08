@@ -2,9 +2,11 @@
     padding: 0;
     margin: 0;
 }
+
 .post-wall {
     width: 80%;
 }
+
 .post-container {
     margin-left: auto !important;
     margin-right: auto !important;
@@ -13,29 +15,54 @@
     width: 64%;
     height: fit-content;
     display: block;
+    overflow: hidden;
+    border-radius: 24pt;
+
+    background-color: rgb(241, 218, 155);
 }
+
 .post-image {
-    width: 100%; 
+    width: 100%;
 }
+
 .post-image-container {
     display: block;
     width: 100%;
-    height: 72%;
+    height: 64%;
     margin-left: auto !important;
     margin-right: auto !important;
     overflow-y: hidden;
 }
-.post-title {
-    width: 100%;
-    height: 8%;
-    text-align: center;
-    display: block;
-}
-.post-footer {
+
+.post-info {
     width: 100%;
     height: fit-content;
     display: inline-block;
 }
+
+.post-user {
+    width: 40%;
+    height: 8%;
+    text-align: center;
+    float: left;
+    display: block;
+}
+
+.post-title {
+    width: 40%;
+    height: 8%;
+    text-align: center;
+    float: right;
+    display: block;
+}
+
+.post-footer {
+    width: 100%;
+    height: fit-content;
+    display: inline-block;
+    margin-bottom: 1vh !important;
+}
+
 .post-score {
     width: 40%;
     height: 5%;
@@ -43,10 +70,50 @@
     text-align: center;
     display: block;
 }
+
 .post-date {
     width: 40%;
     height: 5%;
     float: right;
     text-align: center;
     display: block;
+}
+
+.post-button {
+    height: 12vh;
+    width: 12vh;
+
+    background-color: rgb(135, 196, 78);
+    border-radius: 32%;
+
+    position: fixed;
+    bottom: 6vh;
+    right: 6vh;
+}
+
+.plus {
+    position: absolute;
+    right: 1vh;
+    top: 1vh;
+    width: 10vh;
+    height: 10vh;
+    opacity: 0.3;
+}
+
+.plus:hover {
+    opacity: 1;
+}
+
+.plus:before,
+.plus:after {
+    position: absolute;
+    left: 4.5vh;
+    content: ' ';
+    height: 10vh;
+    width: 1vh;
+    background-color: #333;
+}
+
+.plus:after {
+    transform: rotate(-90deg);
 }

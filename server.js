@@ -4,16 +4,24 @@ const url = require('url');
 const ejs = require('ejs');
 const fs = require('fs')
 require('dotenv').config();
-const get_img = require('./modules/get_img');
 const path = require('path');
 const router = express.Router();
 const http = require('http');
 const bodyParser = require('body-parser');
-const route = require('./modules/route.js')
+var session = require('express-session')
+const cookieParser = require('cookie-parser')
+
 
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('./public'));
+app.use(cookieParser())
+app.use(session({
+    secret: 'replace me',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(express.json());
 
 const mClient = require('mongodb').MongoClient;
 
@@ -25,7 +33,39 @@ mClient.connect(process.env.uri, function (err, client) {
 });
 
 app.get('/', function (req, res) {
-    res.render('index.ejs', {posts:posts});
+    db.collection('Posts').find(req.body).toArray(function (err, result) {
+        if (err) throw err;
+        posts = JSON.parse(JSON.stringify(result));
+        db.collection('UserData').findOne({ username: 'admin' }, function (err, result) {
+            if (err) throw err;
+            user = JSON.parse(JSON.stringify(result))
+            res.render('index', {
+                posts: posts,
+                user: user
+            });
+        })
+
+    });
+});
+
+app.get('/game', function (req, res) {
+    db.collection('Posts').find(req.body).toArray(function (err, result) {
+
+        posts = JSON.parse(JSON.stringify(result));
+        res.render('index', {
+            posts: posts
+        });
+    });
+});
+
+app.get('/profile', function (req, res) {
+    db.collection('UserData').find(req.body).toArray(function (err, result) {
+        if (err) throw err;
+        users = JSON.parse(JSON.stringify(result));
+        res.render('index', {
+            posts: posts
+        });
+    });
 });
 
 app.get("/getUserData", function (req, res) {
@@ -42,18 +82,35 @@ app.get("/getPosts", function (req, res) {
     });
 });
 
-var posts = 
-[
-    {
-        post_title: 'Test0',
-        img: './images/default.png',
-        score: 0,
-        datetime: '5/10/2022'
-    },
-    {
-        post_title: 'Test1',
-        img: './images/default.png',
-        score: 3,
-        datetime: '5/10/2022'
+//adapted from https://codeshack.io/basic-login-system-nodejs-express-mysql/
+
+app.post('/auth', function (request, response) {
+    // Capture the input fields
+    let username = request.body.username;
+    let password = request.body.password;
+    // Ensure the input fields exists and are not empty
+    if (username && password) {
+        // Execute SQL query that'll select the account from the database based on the specified username and password
+        db.collection("UserData").find({
+            username: username,
+            password: password
+        }).toArray(function (error, result) {
+            // If there is an issue with the query, output the error
+            if (error) throw error;
+            // If the account exists
+            if (results.length > 0) {
+                // Authenticate the user
+                request.session.loggedin = true;
+                request.session.username = username;
+                // Redirect to home page
+                response.redirect('/');
+            } else {
+                response.send('Incorrect Username and/or Password!');
+            }
+            response.end();
+        });
+    } else {
+        response.send('Please enter Username and Password!');
+        response.end();
     }
-];
+})

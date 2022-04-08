@@ -1,0 +1,10 @@
+<!-- views/partials/userInfo.ejs -->
+<link rel="stylesheet" type="text/css" href="./stylesheets/userInfo.css">
+<% if (!user) {%>
+<%    clss = "login-pane"%>
+<%} else {%>
+<%    clss = "user-pane"%>
+<%}%>
+<div class= <%=clss%>>
+    <div class="user-name"><%= user.username%></div>
+</div>
