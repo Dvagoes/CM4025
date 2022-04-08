@@ -1,0 +1,22 @@
+.user-pane {
+    height: 8vh;
+    width: 24vh;
+
+    background-color: rgb(135, 196, 78);
+    border-radius: 4vh 0 0 4vh;
+
+    position: fixed;
+    top: 28vh;
+    right: 0;
+
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.user-name {
+    height: 8vh;
+    width: 24vh;
+    line-height: 8vh;
+    font-size: 4vh;
+}

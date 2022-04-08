@@ -12,17 +12,37 @@
             <% posts.forEach((post)=> {%>
                 <div class="post-container">
                     <div class="post-image-container">
-                        <img class="post-image" src = <%=post.img%>>
+                        <img class="post-image" src=<%=post.img_name %>>
                     </div>
-                    <div class="post-title"><%= post.post_title %></div>
+                    <div class="post-info">
+                        <div class="post-user">
+                            <%= post.username %>
+                        </div>
+                        <div class="post-title">
+                            <%= post.post_title %>
+                        </div>
+                    </div>
                     <div class="post-footer">
-                        <div class="post-score"><%= post.score %></div>
-                        <div class="post-date"><%= post.datetime %></div>
+                        <div class="post-score" onclick="add_score()">
+                            <%= post.score %>
+                        </div>
+                        <div class="post-date">
+                            <%= post.datetime %>
+                        </div>
                     </div>
                 </div>
                 <% }); %>
         </div>
-    <%- include('./partials/footer') %>
+
+        <div class="post-button" onclick="add_post()">
+            <a class="plus"></a>
+        </div>
+
+        <% if (loggedin) {%>
+            <% include('./partials/userInfo')%>
+                <% } else {%>
+                    <% include('./partials/loginPane')%>
+                        <%- include('./partials/footer') %>
 
 </body>
 
