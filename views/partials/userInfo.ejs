@@ -1,10 +1,14 @@
 <!-- views/partials/userInfo.ejs -->
 <link rel="stylesheet" type="text/css" href="./stylesheets/userInfo.css">
-<% if (!user) {%>
-<%    clss = "login-pane"%>
-<%} else {%>
-<%    clss = "user-pane"%>
-<%}%>
-<div class= <%=clss%>>
-    <div class="user-name"><%= user.username%></div>
+
+<div class= "user-pane">
+    <div class="user-name"><%=session.username%></div>
+    <div class="logout-btn" onclick="logout()">Logout</div>
 </div>
+
+<script>
+    function logout() {
+        $body = $('body');
+        $body.load('/logout');
+    }
+</script>   

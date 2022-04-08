@@ -1,0 +1,72 @@
+/*
+* {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+    font-size: 16px;
+}
+*/
+
+body {
+    background-color: #435165;
+}
+
+.login {
+    width: 42vh;
+    height: 48vh;
+    background-color: #ffffff;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 5vh;
+    margin: 20vh auto;
+    overflow: hidden;
+}
+
+.login h1 {
+    text-align: center;
+    color: #5b6574;
+    font-size: 4vh;
+    padding: 2vh 0 2vh 0;
+    border-bottom: 0.5vh solid #dee0e4;
+}
+
+.login form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 3vh;
+}
+
+.login form label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 7vh;
+    height: 7vh;
+    background-color: #3274d6;
+    color: #ffffff;
+}
+
+.login form input[type="password"],
+.login form input[type="text"] {
+    width: 28vh;
+    height: 6vh;
+    border: 0.5vh solid #dee0e4;
+    margin-bottom: 3vh;
+    padding: 0 2vh;
+}
+
+.login form input[type="submit"] {
+    width: 100%;
+    padding: 2vh;
+    margin-top: 3vh;
+    background-color: #3274d6;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+
+.login form input[type="submit"]:hover {
+    background-color: #2868c7;
+    transition: background-color 0.2s;
+}
