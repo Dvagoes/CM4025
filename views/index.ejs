@@ -17,18 +17,19 @@
                     </div>
                     <div class="post-info">
                         <div class="post-user">
-                            <%= post.username %>
+                            User: <%= post.username %>
                         </div>
                         <div class="post-title">
-                            <%= post.post_title %>
+                            Title: <%= post.post_title %>
                         </div>
                     </div>
                     <div class="post-footer">
                         <div class="post-score" onclick="add_score()">
-                            <%= post.score %>
+                            Likes: <%= post.score %>
                         </div>
                         <div class="post-date">
-                            <%= post.datetime %>
+                            <% date = new Date(post.datetime) %>
+                            Posted: <%= date.toLocaleDateString() %>
                         </div>
                     </div>
                 </div>
