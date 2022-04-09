@@ -10,13 +10,13 @@
 .post-container {
     margin-left: auto !important;
     margin-right: auto !important;
-    margin-top: 32px !important;
-    margin-bottom: 32px !important;
-    width: 64%;
+    margin-top: 4vh !important;
+    margin-bottom: 4vh !important;
+    width: 60vw;
     height: fit-content;
     display: block;
     overflow: hidden;
-    border-radius: 24pt;
+    border-radius: 8vh;
 
     background-color: rgb(241, 218, 155);
 }
@@ -38,6 +38,7 @@
     width: 100%;
     height: fit-content;
     display: inline-block;
+    font-size: 3vh;
 }
 
 .post-user {
@@ -61,6 +62,7 @@
     height: fit-content;
     display: inline-block;
     margin-bottom: 1vh !important;
+    font-size: 2vh;
 }
 
 .post-score {
