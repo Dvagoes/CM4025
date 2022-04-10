@@ -1,0 +1,24 @@
+<link rel="stylesheet" type="text/css" href="./stylesheets/comment.css">
+<div class="comment-container">
+    <div id="comment-wall">
+        <% comments = post.comments %>
+        <% comments.forEach((comment)=> {%>
+            <div class="comment-container">
+                <div class="comment-content">
+                    <div class="comment-user">
+                        User: <%= comment.username %>
+                    </div>
+                    <div class="comment-text">
+                        Title: <%= comment.content %>
+                    </div>
+                </div>
+                <div class="comment-footer">
+                    <div class="comment-date">
+                        <% date = new Date(comment.datetime) %>
+                        Posted: <%= date.toLocaleDateString() %>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+    </div>
+</div>

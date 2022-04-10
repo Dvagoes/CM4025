@@ -213,3 +213,20 @@ app.post('/newPost', function (request, response) {
         response.end();
     }
 });
+
+app.get('/getComment/:_id', function (req, res) {
+    db.collection("Comments").findOne(req.params, function (err, result) {
+        if (err) throw err;
+        if (result) {
+            newscore = result.score - 1;
+            db.collection("Posts").updateOne(req.params, { score: newscore }, function (err, result) {
+                if (err) throw err;
+                if (result) {
+                    console.log("post liked successfully");
+                }
+            });
+        } else {
+            res.send('Post does not exist');
+        }
+    });
+});
