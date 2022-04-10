@@ -10,6 +10,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 var session = require('express-session')
 const cookieParser = require('cookie-parser')
+var ObjectId = require('mongodb').ObjectId;
 
 
 app.set('view engine', 'ejs');
@@ -139,7 +140,7 @@ app.post('/newUser', function (request, response) {
     }
 });
 
-app.get('/logout', function (req, res) {
+app.post('/logout', function (req, res) {
     if (req.session.username) {
         delete req.session.username;
         req.session.loggedin = false;
@@ -191,7 +192,8 @@ app.post('/newPost', function (request, response) {
     let img_name = request.body.img_name;
     let score = 0;
     let username = request.session.username;
-    let datetime = Date.now().toISOString();
+    let dt = new Date()
+    let datetime = dt.toISOString();
     let comments = [];
 
     // Ensure the input fields exists and are not empty
@@ -214,19 +216,40 @@ app.post('/newPost', function (request, response) {
     }
 });
 
-app.get('/getComment/:_id', function (req, res) {
-    db.collection("Comments").findOne(req.params, function (err, result) {
-        if (err) throw err;
-        if (result) {
-            newscore = result.score - 1;
-            db.collection("Posts").updateOne(req.params, { score: newscore }, function (err, result) {
-                if (err) throw err;
-                if (result) {
-                    console.log("post liked successfully");
-                }
-            });
-        } else {
-            res.send('Post does not exist');
-        }
-    });
+app.post('/addComment/:_id', function (req, res) {
+    console.log(req.params)
+    _id = new ObjectId(req.params._id);
+    let q = {"_id": _id};
+    if (req.session.loggedin) {
+        db.collection("Posts").findOne(q, function (err, result) {
+            if (err) throw err;
+            if (result) {
+                let content = req.body.comment;
+                let username = req.session.username
+                let dt = new Date()
+                let datetime = dt.toISOString();
+                db.collection("Posts").updateOne(q, {
+                    "$push":
+                    {
+                        comments: {
+                            username: username,
+                            datetime: datetime,
+                            content: content
+                        }
+                    }
+                }, function (err, result) {
+                    if (err) throw err;
+                    if (result) {
+                        console.log("comment added successfully");
+                        res.redirect('/')
+                    }
+                });
+            } else {
+                res.send('Post does not exist');
+            }
+        });
+    } else {
+        res.redirect('/login')
+    }
+    
 });
