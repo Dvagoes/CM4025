@@ -8,10 +8,14 @@
     position: fixed;
     top: 28vh;
     right: 0;
+}
 
+.login-link {
     text-align: center;
     font-weight: bold;
     text-transform: uppercase;
+    color: rgb(22, 21, 21) !important;
+    text-decoration: none !important;
 }
 
 .login-btn {
@@ -19,4 +23,9 @@
     width: 24vh;
     line-height: 8vh;
     font-size: 4vh;
+    opacity: 0.3;
+}
+
+.login-btn:hover {
+    opacity: 1;
 }
