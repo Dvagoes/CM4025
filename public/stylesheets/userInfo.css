@@ -25,4 +25,8 @@
     width: 24vh;
     line-height: 4vh;
     font-size: 2vh;
+    opacity: 0.3;
+}
+.logout-btn:hover {
+    opacity: 1;
 }

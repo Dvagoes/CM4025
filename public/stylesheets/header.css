@@ -6,13 +6,11 @@
     width: 100%;
     height: 120px;
 
-    background-color: rgb(115, 219, 67);
+    background-color: rgb(135, 196, 78);
     text-align: center;
-    
-}
-.banner-img {
-    width: 100%;
-    overflow-y: hidden;
+
+    font-size: 96px;
+    font-weight: bolder;
 }
 .navbar {
     width: 100%;

@@ -58,13 +58,17 @@ app.get('/game', function (req, res) {
 });
 
 app.get('/profile', function (req, res) {
-    db.collection('UserData').find(req.body).toArray(function (err, result) {
-        if (err) throw err;
-        users = JSON.parse(JSON.stringify(result));
-        res.render('profile', {
-            posts: posts
+    if (req.session.loggedin) {
+        db.collection('UserData').find(req.body).toArray(function (err, result) {
+            if (err) throw err;
+            users = JSON.parse(JSON.stringify(result));
+            res.render('profile', {
+                posts: posts
+            });
         });
-    });
+    } else  {
+        res.render('./partials/login');
+    }
 });
 
 app.get("/getUserData", function (req, res) {
@@ -114,6 +118,27 @@ app.post('/auth', function (request, response) {
     }
 });
 
+app.post('/newUser', function (request, response) {
+    // Capture the input fields
+    let username = request.body.username;
+    let password = request.body.password;
+    // Ensure the input fields exists and are not empty
+    if (username && password) {
+        // Execute SQL query that'll select the account from the database based on the specified username and password
+        db.collection("UserData").insertOne({
+            username: username,
+            password: password,
+            admin: false
+        }, function (error, result) {
+            if (error) throw error;
+            console.log("new user added")
+        });
+    } else {
+        response.send('Please enter Username and Password!');
+        response.end();
+    }
+});
+
 app.get('/logout', function (req, res) {
     if (req.session.username) {
         delete req.session.username;
@@ -124,4 +149,67 @@ app.get('/logout', function (req, res) {
 
 app.get('/login', function (req, res) {
     res.render('./partials/login');
+});
+
+app.post('/like/:_id', function (req, res) {
+    db.collection("Posts").findOne(req.params, function (err, result) {
+        if (err) throw err;
+        if (result) {
+            newscore = result.score + 1;
+            db.collection("Posts").updateOne(req.params, { score: newscore }, function (err, result) {
+                if (err) throw err;
+                if (result) {
+                    console.log("post liked successfully");
+                }
+            });
+        } else {
+            res.send('Post does not exist');
+        }
+    })
+});
+
+app.post('/unlike/:_id', function (req, res) {
+    db.collection("Posts").findOne(req.params, function (err, result) {
+        if (err) throw err;
+        if (result) {
+            newscore = result.score - 1;
+            db.collection("Posts").updateOne(req.params, { score: newscore }, function (err, result) {
+                if (err) throw err;
+                if (result) {
+                    console.log("post liked successfully");
+                }
+            });
+        } else {
+            res.send('Post does not exist');
+        }
+    })
+});
+
+app.post('/newPost', function (request, response) {
+    // Capture the input fields
+    let post_title = request.body.post_title;
+    let img_name = request.body.img_name;
+    let score = 0;
+    let username = request.session.username;
+    let datetime = Date.now().toISOString();
+    let comments = [];
+
+    // Ensure the input fields exists and are not empty
+    if (username && post_title && img_name) {
+        // Execute SQL query that'll select the account from the database based on the specified username and password
+        db.collection("Posts").insertOne({
+            datetime: datetime,
+            post_title: post_title,
+            img_name: img_name,
+            score: score,
+            username: username,
+            comments: comments
+        }, function (err, res) {
+            if (err) throw err;
+            console.log("new post added");
+        })
+    } else {
+        response.send("Can't send an empty post!");
+        response.end();
+    }
 });
