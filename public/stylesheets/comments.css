@@ -14,7 +14,7 @@
     margin-bottom: 1vh !important;
     width: 56vw;
     height: fit-content;
-    display: none;
+    display: block;
     overflow: hidden;
     border-radius: 4vh;
 
@@ -28,19 +28,21 @@
 }
 
 .comment-user {
-    width: 20%;
+    width: 7vw;
     height: 8%;
-    text-align: center;
+    text-align: right;
     float: left;
     display: block;
-    font-size: 2vh;
+    font-size: 2.4vh;
     font-weight: bold;
+    text-transform: uppercase;
+    padding-right: 1vw;
 }
 
 .comment-text {
-    width: 80%;
+    width: 48vw;
     height: 8%;
-    text-align: center;
+    text-align: left;
     float: right;
     display: block;
     font-size: 2.4vh;
@@ -60,4 +62,34 @@
     float: right;
     text-align: center;
     display: block;
+}
+
+.comment-form {
+    width: 100%;
+    height: fit-content;
+}
+
+.comment-input {
+    width: 50vw;
+    height: fit-content;
+    border: 0.5vh solid #dee0e4;
+    margin-left: 2vw;
+    margin-bottom: 1vh;
+    padding: 0 2vh;
+    font-size: 2.4vh;
+    border-radius: 1vh;
+}
+
+.comment-submit {
+    width: 20%;
+    padding: 2vh;
+    margin-bottom: 3vh;
+    margin-right: 2vw;
+    background-color: rgb(135, 196, 78);;
+    border: 0;
+    border-radius: 1vh;
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    color: #ffffff;
 }
