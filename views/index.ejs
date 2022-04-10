@@ -4,14 +4,13 @@
 <head>
     <title>Justice for Ugly Animals - Home</title>
     <link rel="stylesheet" type="text/css" href="./stylesheets/post.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>
 
 <body>
     <%- include('./partials/header') %>
         <div id="post-wall">
             <% posts.forEach((post)=> {%>
-                <div class="post-container" onclick="//open post and comments">
+                <div class="post-container">
                     <div class="post-image-container">
                         <img class="post-image" src=<%=post.img_name %>>
                     </div>
@@ -28,11 +27,12 @@
                             Likes: <%= post.score %>
                         </div>
                         <div class="post-date">
-                            <% date = new Date(post.datetime) %>
-                            Posted: <%= date.toLocaleDateString() %>
+                            <% date=new Date(post.datetime) %>
+                                Posted: <%= date.toLocaleDateString() %>
                         </div>
                     </div>
                 </div>
+                <%- include('./partials/comments', {post: post}); %>
                 <% }); %>
         </div>
 
@@ -41,12 +41,29 @@
         </div>
 
         <% if (session.loggedin) {%>
-            <%-include('./partials/userInfo')%>
+            <%-include('. /partials/userInfo')%>
                 <% } else {%>
-                    <%-include('./partials/loginBtn')%>
-                    <%}%>
-                        <%- include('./partials/footer') %>
+                    <%-include('. /partials/loginBtn')%>
+                        <%}%>
+                            <%- include('./partials/footer') %>
 
 </body>
+
+<script>
+    var coll = document.getElementsByClassName("post-container");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
 
 </html>
