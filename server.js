@@ -38,13 +38,24 @@ app.get('/', function (req, res) {
         if (err) throw err;
         posts = JSON.parse(JSON.stringify(result));
         if (req.session.loggedin) {
-            res.render('index')
+            id = new ObjectId(req.session.userid);
+            db.collection('UserData').findOne({"_id": id}, function (err, result) {
+                if (err) throw err;
+                user = JSON.parse(JSON.stringify(result));
+                res.render('index', {
+                    posts: posts,
+                    username: user.username,
+                    likes: user.likes,
+                    session: req.session
+                });
+            });
+        } else {
+            res.render('index', {
+                posts: posts,
+                session: req.session
+            });
+    
         }
-        res.render('index', {
-            posts: posts,
-            session: req.session
-        });
-
     });
 });
 
@@ -53,22 +64,25 @@ app.get('/game', function (req, res) {
 
         posts = JSON.parse(JSON.stringify(result));
         res.render('game', {
-            posts: posts
+            posts: posts,
+            session: req.session
         });
     });
 });
 
 app.get('/profile', function (req, res) {
     if (req.session.loggedin) {
-        db.collection('UserData').find(req.body).toArray(function (err, result) {
+        id = new ObjectId(req.session.userid);
+        db.collection('UserData').findOne({"_id": id}).toArray(function (err, result) {
             if (err) throw err;
-            users = JSON.parse(JSON.stringify(result));
+            user = JSON.parse(JSON.stringify(result));
             res.render('profile', {
-                posts: posts
+                user: user,
+                session: req.session
             });
         });
     } else {
-        res.render('./partials/login');
+        res.render('./login');
     }
 });
 
@@ -105,7 +119,7 @@ app.post('/auth', function (request, response) {
             if (results.length > 0) {
                 // Authenticate the user
                 request.session.loggedin = true;
-                request.session.user = results[0];
+                request.session.userid = results[0]._id;
                 // Redirect to home page
                 response.redirect('/');
             } else {
@@ -153,14 +167,27 @@ app.get('/login', function (req, res) {
 });
 
 app.post('/like/:_id', function (req, res) {
-    db.collection("Posts").findOne(req.params, function (err, result) {
+    _id = new ObjectId(req.params._id);
+    let q = { "_id": _id };
+    db.collection("Posts").findOne(q, function (err, result) {
         if (err) throw err;
         if (result) {
             newscore = result.score + 1;
-            db.collection("Posts").updateOne(req.params, { score: newscore }, function (err, result) {
+            db.collection("Posts").updateOne(q, { $set: {score: newscore }}, function (err, result) {
                 if (err) throw err;
                 if (result) {
-                    console.log("post liked successfully");
+                    userid = new ObjectId(req.session.userid);
+                    let q = { "_id": userid };
+                    db.collection("UserData").updateOne(q, {$push: {likes: _id}}, function (err, result) {
+                        if (err) throw err;
+                        if (result) {
+                            res.redirect('/');
+                        } else {
+                            res.send('Failed to update database');
+                        }
+                    })
+                } else {
+                    res.send('Failed to update database');
                 }
             });
         } else {
@@ -170,14 +197,27 @@ app.post('/like/:_id', function (req, res) {
 });
 
 app.post('/unlike/:_id', function (req, res) {
-    db.collection("Posts").findOne(req.params, function (err, result) {
+    _id = new ObjectId(req.params._id);
+    let q = { "_id": _id };
+    db.collection("Posts").findOne(q, function (err, result) {
         if (err) throw err;
         if (result) {
             newscore = result.score - 1;
-            db.collection("Posts").updateOne(req.params, { score: newscore }, function (err, result) {
+            db.collection("Posts").updateOne(q, { $set: {score: newscore }}, function (err, result) {
                 if (err) throw err;
                 if (result) {
-                    console.log("post liked successfully");
+                    userid = new ObjectId(req.session.userid);
+                    let q = { "_id": userid };
+                    db.collection("UserData").updateOne(q, {$pull: {likes: _id}}, function (err, result) {
+                        if (err) throw err;
+                        if (result) {
+                            res.redirect('/');
+                        } else {
+                            res.send('Failed to update database');
+                        }
+                    })
+                } else {
+                    res.send('Failed to update database');
                 }
             });
         } else {
@@ -217,7 +257,6 @@ app.post('/newPost', function (request, response) {
 });
 
 app.post('/addComment/:_id', function (req, res) {
-    console.log(req.params)
     _id = new ObjectId(req.params._id);
     let q = { "_id": _id };
     if (req.session.loggedin) {
@@ -225,7 +264,7 @@ app.post('/addComment/:_id', function (req, res) {
             if (err) throw err;
             if (result) {
                 let content = req.body.comment;
-                let username = req.session.user.username
+                let username = req.session.username
                 let dt = new Date()
                 let datetime = dt.toISOString();
                 if (content) {
