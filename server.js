@@ -38,7 +38,7 @@ app.get('/', function (req, res) {
         if (err) throw err;
         posts = JSON.parse(JSON.stringify(result));
         if (req.session.loggedin) {
-
+            res.render('index')
         }
         res.render('index', {
             posts: posts,
@@ -67,7 +67,7 @@ app.get('/profile', function (req, res) {
                 posts: posts
             });
         });
-    } else  {
+    } else {
         res.render('./partials/login');
     }
 });
@@ -105,7 +105,7 @@ app.post('/auth', function (request, response) {
             if (results.length > 0) {
                 // Authenticate the user
                 request.session.loggedin = true;
-                request.session.username = username;
+                request.session.user = results[0];
                 // Redirect to home page
                 response.redirect('/');
             } else {
@@ -141,15 +141,15 @@ app.post('/newUser', function (request, response) {
 });
 
 app.post('/logout', function (req, res) {
-    if (req.session.username) {
-        delete req.session.username;
+    if (req.session.user) {
+        delete req.session.user;
         req.session.loggedin = false;
         res.redirect('/')
     }
 });
 
 app.get('/login', function (req, res) {
-    res.render('./partials/login');
+    res.render('./login');
 });
 
 app.post('/like/:_id', function (req, res) {
@@ -191,7 +191,7 @@ app.post('/newPost', function (request, response) {
     let post_title = request.body.post_title;
     let img_name = request.body.img_name;
     let score = 0;
-    let username = request.session.username;
+    let username = request.session.user.username;
     let dt = new Date()
     let datetime = dt.toISOString();
     let comments = [];
@@ -219,31 +219,35 @@ app.post('/newPost', function (request, response) {
 app.post('/addComment/:_id', function (req, res) {
     console.log(req.params)
     _id = new ObjectId(req.params._id);
-    let q = {"_id": _id};
+    let q = { "_id": _id };
     if (req.session.loggedin) {
         db.collection("Posts").findOne(q, function (err, result) {
             if (err) throw err;
             if (result) {
                 let content = req.body.comment;
-                let username = req.session.username
+                let username = req.session.user.username
                 let dt = new Date()
                 let datetime = dt.toISOString();
-                db.collection("Posts").updateOne(q, {
-                    "$push":
-                    {
-                        comments: {
-                            username: username,
-                            datetime: datetime,
-                            content: content
+                if (content) {
+                    db.collection("Posts").updateOne(q, {
+                        "$push":
+                        {
+                            comments: {
+                                username: username,
+                                datetime: datetime,
+                                content: content
+                            }
                         }
-                    }
-                }, function (err, result) {
-                    if (err) throw err;
-                    if (result) {
-                        console.log("comment added successfully");
-                        res.redirect('/')
-                    }
-                });
+                    }, function (err, result) {
+                        if (err) throw err;
+                        if (result) {
+                            console.log("comment added successfully");
+                            res.redirect('/')
+                        }
+                    });
+                } else {
+                    res.send('Need comment content')
+                }
             } else {
                 res.send('Post does not exist');
             }
@@ -251,5 +255,5 @@ app.post('/addComment/:_id', function (req, res) {
     } else {
         res.redirect('/login')
     }
-    
+
 });
