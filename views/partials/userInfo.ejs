@@ -3,12 +3,8 @@
 
 <div class= "user-pane">
     <div class="user-name"><%=username%></div>
-    <div class="logout-btn" onclick="logout()">Logout</div>
+    <form action="/logout" method="post">
+        <input type="submit" class="logout-btn" value="Logout">
+    </form>
 </div>
 
-<script>
-    function logout() {
-        $body = $('body');
-        $body.load('/logout');
-    }
-</script>   

@@ -9,7 +9,10 @@
 <body>
     <%- include('./partials/header') %>
         <div id="post-wall">
-            <% posts.forEach((post)=> {%>
+            <% if (session.loggedin) { %>
+            <%- include('./partials/newPost') %>
+            <% } %>
+            <% posts.slice().reverse().forEach((post)=> {%>
                 <div class="post-container">
                     <div class="post-image-container">
                         <img class="post-image" src=<%=post.img_name %>>
@@ -23,20 +26,21 @@
                         </div>
                     </div>
                     <div class="post-footer">
-                        <% if (session.loggedin) { %>
-                            <form class="like-unlike-form">
-                                <% if (likes.includes(post._id)) {%>
-                                    <button class="unlike" type="submit" formaction="/unlike/<%=post._id%>"
-                                        formmethod="post">Liked!</button>
-                                    <% } else {%>
-                                        <button class="like" type="submit" formaction="/like/<%=post._id%>"
-                                            formmethod="post">Like</button>
-                                        <% } %>
-                            </form>
-                            <% } %>
+                        
                                 <div class="post-score" onclick="add_score()">
                                     Likes: <%= post.score %>
                                 </div>
+                                <% if (session.loggedin) { %>
+                                    <form class="like-unlike-form">
+                                        <% if (likes.includes(post._id)) {%>
+                                            <button class="unlike" type="submit" formaction="/unlike/<%=post._id%>"
+                                                formmethod="post">Liked!</button>
+                                            <% } else {%>
+                                                <button class="like" type="submit" formaction="/like/<%=post._id%>"
+                                                    formmethod="post">Like</button>
+                                                <% } %>
+                                    </form>
+                                    <% } %>
                                 <div class="post-date">
                                     <% date=new Date(post.datetime) %>
                                         Posted: <%= date.toLocaleDateString() %>
@@ -45,10 +49,6 @@
                 </div>
                 <%- include('./partials/comments', {post: post}); %>
                     <% }); %>
-        </div>
-
-        <div class="post-button" onclick="add_post()">
-            <a class="plus"></a>
         </div>
 
         <% if (session.loggedin) {%>

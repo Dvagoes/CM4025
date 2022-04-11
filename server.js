@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 var session = require('express-session')
 const cookieParser = require('cookie-parser')
 var ObjectId = require('mongodb').ObjectId;
-
+var formidable = require('formidable')
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,8 +29,9 @@ const mClient = require('mongodb').MongoClient;
 mClient.connect(process.env.uri, function (err, client) {
     if (err) throw err;
     db = client.db('CM4025');
-    app.listen(8080);
-    console.log("Running on 8080")
+    port = process.env.PORT || '8080'
+    app.listen(port);
+    console.log("Running on", port)
 });
 
 app.get('/', function (req, res) {
@@ -39,7 +40,7 @@ app.get('/', function (req, res) {
         posts = JSON.parse(JSON.stringify(result));
         if (req.session.loggedin) {
             id = new ObjectId(req.session.userid);
-            db.collection('UserData').findOne({"_id": id}, function (err, result) {
+            db.collection('UserData').findOne({ "_id": id }, function (err, result) {
                 if (err) throw err;
                 user = JSON.parse(JSON.stringify(result));
                 res.render('index', {
@@ -54,7 +55,7 @@ app.get('/', function (req, res) {
                 posts: posts,
                 session: req.session
             });
-    
+
         }
     });
 });
@@ -73,7 +74,7 @@ app.get('/game', function (req, res) {
 app.get('/profile', function (req, res) {
     if (req.session.loggedin) {
         id = new ObjectId(req.session.userid);
-        db.collection('UserData').findOne({"_id": id}).toArray(function (err, result) {
+        db.collection('UserData').findOne({ "_id": id }).toArray(function (err, result) {
             if (err) throw err;
             user = JSON.parse(JSON.stringify(result));
             res.render('profile', {
@@ -82,7 +83,7 @@ app.get('/profile', function (req, res) {
             });
         });
     } else {
-        res.render('./login');
+        res.redirect('/login');
     }
 });
 
@@ -155,10 +156,10 @@ app.post('/newUser', function (request, response) {
 });
 
 app.post('/logout', function (req, res) {
-    if (req.session.user) {
-        delete req.session.user;
+    if (req.session.userid) {
+        delete req.session.userid;
         req.session.loggedin = false;
-        res.redirect('/')
+        res.redirect('back')
     }
 });
 
@@ -173,15 +174,15 @@ app.post('/like/:_id', function (req, res) {
         if (err) throw err;
         if (result) {
             newscore = result.score + 1;
-            db.collection("Posts").updateOne(q, { $set: {score: newscore }}, function (err, result) {
+            db.collection("Posts").updateOne(q, { $set: { score: newscore } }, function (err, result) {
                 if (err) throw err;
                 if (result) {
                     userid = new ObjectId(req.session.userid);
                     let q = { "_id": userid };
-                    db.collection("UserData").updateOne(q, {$push: {likes: _id}}, function (err, result) {
+                    db.collection("UserData").updateOne(q, { $push: { likes: _id } }, function (err, result) {
                         if (err) throw err;
                         if (result) {
-                            res.redirect('/');
+                            res.redirect('back');
                         } else {
                             res.send('Failed to update database');
                         }
@@ -203,15 +204,15 @@ app.post('/unlike/:_id', function (req, res) {
         if (err) throw err;
         if (result) {
             newscore = result.score - 1;
-            db.collection("Posts").updateOne(q, { $set: {score: newscore }}, function (err, result) {
+            db.collection("Posts").updateOne(q, { $set: { score: newscore } }, function (err, result) {
                 if (err) throw err;
                 if (result) {
                     userid = new ObjectId(req.session.userid);
                     let q = { "_id": userid };
-                    db.collection("UserData").updateOne(q, {$pull: {likes: _id}}, function (err, result) {
+                    db.collection("UserData").updateOne(q, { $pull: { likes: _id } }, function (err, result) {
                         if (err) throw err;
                         if (result) {
-                            res.redirect('/');
+                            res.redirect('back');
                         } else {
                             res.send('Failed to update database');
                         }
@@ -228,69 +229,107 @@ app.post('/unlike/:_id', function (req, res) {
 
 app.post('/newPost', function (request, response) {
     // Capture the input fields
-    let post_title = request.body.post_title;
-    let img_name = request.body.img_name;
-    let score = 0;
-    let username = request.session.user.username;
-    let dt = new Date()
-    let datetime = dt.toISOString();
-    let comments = [];
-
-    // Ensure the input fields exists and are not empty
-    if (username && post_title && img_name) {
-        // Execute SQL query that'll select the account from the database based on the specified username and password
-        db.collection("Posts").insertOne({
-            datetime: datetime,
-            post_title: post_title,
-            img_name: img_name,
-            score: score,
-            username: username,
-            comments: comments
-        }, function (err, res) {
+    let form = new formidable.IncomingForm({
+        uploadDir: __dirname + '/tmp',
+        keepExtensions: true
+    });
+    form.parse(request, function (err, fields, files) {
+        if (err) throw err;
+        let img = files.image.filepath;
+        console.log(img);
+        newFilePath = "./public/images/" + files.image.originalFilename;
+        fs.rename(img, newFilePath, function (err) {
             if (err) throw err;
-            console.log("new post added");
+            if (request.session.loggedin) {
+                userid = new ObjectId(request.session.userid);
+                let q = { "_id": userid };
+                db.collection("UserData").findOne(q, function (err, result) {
+                    if (err) throw err;
+                    if (result) {
+
+                        let img_name = "./images/" + files.image.originalFilename;
+                        let username = result.username;
+                        let post_title = fields.title;
+                        let score = 0;
+                        let dt = new Date()
+                        let datetime = dt.toISOString();
+                        // Ensure the input fields exists and are not empty
+                        if (username && post_title && img_name) {
+                            // Execute SQL query that'll select the account from the database based on the specified username and password
+                            db.collection("Posts").insertOne({
+                                datetime: datetime,
+                                post_title: post_title,
+                                img_name: img_name,
+                                score: score,
+                                username: username,
+                                comments: []
+                            }, function (err, res) {
+                                if (err) throw err;
+                                console.log("new post added");
+                                response.redirect('back')
+                            })
+                        } else {
+                            response.send("Upload Failed");
+                            response.end();
+                        }
+                    }
+                })
+            }
         })
-    } else {
-        response.send("Can't send an empty post!");
-        response.end();
-    }
+    })
+
+
 });
 
 app.post('/addComment/:_id', function (req, res) {
-    _id = new ObjectId(req.params._id);
-    let q = { "_id": _id };
+
     if (req.session.loggedin) {
-        db.collection("Posts").findOne(q, function (err, result) {
+        userid = new ObjectId(req.session.userid);
+        let q = { "_id": userid };
+        db.collection("UserData").findOne(q, function (err, result) {
             if (err) throw err;
             if (result) {
-                let content = req.body.comment;
-                let username = req.session.username
-                let dt = new Date()
-                let datetime = dt.toISOString();
-                if (content) {
-                    db.collection("Posts").updateOne(q, {
-                        "$push":
-                        {
-                            comments: {
-                                username: username,
-                                datetime: datetime,
-                                content: content
-                            }
+                let username = result.username;
+                _id = new ObjectId(req.params._id);
+                let q = { "_id": _id };
+
+                db.collection("Posts").findOne(q, function (err, result) {
+                    if (err) throw err;
+                    if (result) {
+                        let content = req.body.comment;
+                        let dt = new Date()
+                        let datetime = dt.toISOString();
+                        if (content) {
+                            db.collection("Posts").updateOne(q, {
+                                "$push":
+                                {
+                                    comments: {
+                                        username: username,
+                                        datetime: datetime,
+                                        content: content
+                                    }
+                                }
+                            }, function (err, result) {
+                                if (err) throw err;
+                                if (result) {
+                                    console.log("comment added successfully");
+                                    res.redirect('back')
+                                }
+                            });
+                        } else {
+                            res.send('Need comment content')
                         }
-                    }, function (err, result) {
-                        if (err) throw err;
-                        if (result) {
-                            console.log("comment added successfully");
-                            res.redirect('/')
-                        }
-                    });
-                } else {
-                    res.send('Need comment content')
-                }
+                    } else {
+                        res.send('Post does not exist');
+                    }
+                });
+
+
             } else {
-                res.send('Post does not exist');
+                res.send('Failed to find user');
             }
-        });
+        })
+
     } else {
         res.redirect('/login')
     }

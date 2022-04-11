@@ -1,0 +1,60 @@
+.new-post-view {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 4vh !important;
+    margin-bottom: 4vh !important;
+    width: 60vw;
+    height: fit-content;
+    display: block;
+    overflow: hidden;
+    border-radius: 4vh;
+    padding-top: 2vh;
+
+    background-color: rgb(241, 218, 155);
+}
+
+.new-post-view form {
+    width: 100%;
+    height: fit-content;
+}
+
+.new-post-view input[type="file"] {
+    width: 40vw;
+    height: fit-content;
+    margin-left: 2vw;
+    margin-bottom: 1vh;
+    padding: 0.25vw;
+    font-size: 2.4vh;
+}
+
+.new-post-view input[type="text"] {
+    width: 53.5vw;
+    height: fit-content;
+    border: 0.25vw solid #dee0e4;
+    margin-left: 2vw;
+    margin-bottom: 1vh;
+    padding: 0 2vh;
+    font-size: 2.4vh;
+    border-radius: 1vh;
+}
+
+.new-post-view input[type="submit"] {
+    width: 12vw;
+    height: 4vh;
+    padding: 1vh;
+    margin-bottom: 3vh;
+    margin-right: 2vw;
+    background-color: rgb(135, 196, 78);
+    border: 0;
+    border-radius: 1vh;
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+
+.new-post-view input[type="submit"]:hover {
+    background-color: rgb(94, 146, 46);
+    transition: background-color 0.2s;
+}
