@@ -23,6 +23,11 @@
                         </div>
                     </div>
                     <div class="post-footer">
+                        <% if (session.user.likes.includes(post._id)) {%>
+                        <button class="unlike" action="/like/<%=post._id%>" method="post">Liked!</button>
+                        <% } else {%>
+                        <button class="like" action="/unlike/<%=post._id%>" method="post">Like</button>
+                        <% } %>
                         <div class="post-score" onclick="add_score()">
                             Likes: <%= post.score %>
                         </div>
@@ -50,6 +55,8 @@
 </body>
 
 <script>
+    // for having comments interface dropdown when clicking on post
+    // NEEDS WORK
     var coll = document.getElementsByClassName("post-container");
     var i;
 
