@@ -6,7 +6,7 @@ body {
     width: 42vh;
     height: 46vh;
     background-color: #ffffff;
-    box-shadow: 2vh rgba(20, 20, 20, 0.726);
+    box-shadow: 1vh 1vh rgba(20, 20, 20, 0.726);
     border-radius: 5vh;
     margin: 20vh auto;
     overflow: hidden;

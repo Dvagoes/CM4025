@@ -4,12 +4,12 @@
 
 .banner {
     width: 100%;
-    height: 120px;
+    height: 6vw;
 
     background-color: rgb(135, 196, 78);
     text-align: center;
 
-    font-size: 96px;
+    font-size: 5vw;
     font-weight: bolder;
 }
 .navbar {
@@ -26,8 +26,14 @@
     height: 6vh;
     width: 30vw;
     background-color: rgb(135, 196, 78);
+    transition: background-color 0.2s;
 
     text-align: center;
     font-size: 4vh;
     color: rgb(22, 21, 21);
+}
+
+.navbutton:hover {
+    background-color: rgb(94, 146, 46);
+    transition: background-color 0.2s;
 }

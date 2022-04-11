@@ -1,0 +1,9 @@
+<link rel="stylesheet" type="text/css" href="./stylesheets/newPost.css">
+<div id="newPost" class="new-post-view">
+    <form action="/newPost" method="post" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Post Title..."
+        pattern="[A-Za-z0-9 ]+" required>
+        <input type="file" name="image" id="image" accept="image/*" required>
+        <input type="submit" value="Post">
+    </form>
+</div>

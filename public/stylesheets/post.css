@@ -16,7 +16,7 @@
     height: fit-content;
     display: block;
     overflow: hidden;
-    border-radius: 8vh;
+    border-radius: 4vh;
 
     background-color: rgb(241, 218, 155);
 }
@@ -59,63 +59,50 @@
 
 .post-footer {
     width: 100%;
-    height: fit-content;
+    height: 4vh;
     display: inline-block;
+    margin-top: 1vh !important;
     margin-bottom: 1vh !important;
     font-size: 2vh;
+    padding: 0;
 }
 
 .post-score {
-    width: 40%;
-    height: 5%;
-    float: left;
+    width: 30%;
+    height: 4vh;
     text-align: center;
     display: block;
+    margin: 0;
+    position: absolute;
+    left: 15%;
 }
 
 .post-date {
-    width: 40%;
-    height: 5%;
-    float: right;
+    width: 30%;
+    height: 4vh;
     text-align: center;
     display: block;
+    margin: 0;
+    position: absolute;
+    right: 15%;
 }
 
-.post-button {
-    height: 12vh;
-    width: 12vh;
-
+.unlike, .like {
+    height: 4vh;
+    width: 20%;
     background-color: rgb(135, 196, 78);
-    border-radius: 32%;
-
-    position: fixed;
-    bottom: 6vh;
-    right: 6vh;
-}
-
-.plus {
+    border-radius: 1vh;
     position: absolute;
-    right: 1vh;
-    top: 1vh;
-    width: 10vh;
-    height: 10vh;
-    opacity: 0.3;
+    left: 40%;
+    margin: 0;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+.unlike:hover, .like:hover {
+    background-color: rgb(94, 146, 46);
+    transition: background-color 0.2s;
 }
 
-.plus:hover {
-    opacity: 1;
-}
-
-.plus:before,
-.plus:after {
-    position: absolute;
-    left: 4.5vh;
-    content: ' ';
-    height: 10vh;
-    width: 1vh;
-    background-color: #333;
-}
-
-.plus:after {
-    transform: rotate(-90deg);
-}
