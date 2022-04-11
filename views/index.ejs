@@ -23,22 +23,28 @@
                         </div>
                     </div>
                     <div class="post-footer">
-                        <% if (session.user.likes.includes(post._id)) {%>
-                        <button class="unlike" action="/like/<%=post._id%>" method="post">Liked!</button>
-                        <% } else {%>
-                        <button class="like" action="/unlike/<%=post._id%>" method="post">Like</button>
-                        <% } %>
-                        <div class="post-score" onclick="add_score()">
-                            Likes: <%= post.score %>
-                        </div>
-                        <div class="post-date">
-                            <% date=new Date(post.datetime) %>
-                                Posted: <%= date.toLocaleDateString() %>
-                        </div>
+                        <% if (session.loggedin) { %>
+                            <form class="like-unlike-form">
+                                <% if (likes.includes(post._id)) {%>
+                                    <button class="unlike" type="submit" formaction="/unlike/<%=post._id%>"
+                                        formmethod="post">Liked!</button>
+                                    <% } else {%>
+                                        <button class="like" type="submit" formaction="/like/<%=post._id%>"
+                                            formmethod="post">Like</button>
+                                        <% } %>
+                            </form>
+                            <% } %>
+                                <div class="post-score" onclick="add_score()">
+                                    Likes: <%= post.score %>
+                                </div>
+                                <div class="post-date">
+                                    <% date=new Date(post.datetime) %>
+                                        Posted: <%= date.toLocaleDateString() %>
+                                </div>
                     </div>
                 </div>
                 <%- include('./partials/comments', {post: post}); %>
-                <% }); %>
+                    <% }); %>
         </div>
 
         <div class="post-button" onclick="add_post()">
@@ -53,23 +59,5 @@
                             <%- include('./partials/footer') %>
 
 </body>
-
-<script>
-    // for having comments interface dropdown when clicking on post
-    // NEEDS WORK
-    var coll = document.getElementsByClassName("post-container");
-    var i;
-
-    for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", function () {
-            var content = this.nextElementSibling;
-            if (content.style.display === "block") {
-                content.style.display = "none";
-            } else {
-                content.style.display = "block";
-            }
-        });
-    }
-</script>
 
 </html>
