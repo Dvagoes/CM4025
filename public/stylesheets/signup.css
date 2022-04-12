@@ -6,9 +6,9 @@ body {
     background-color: #435165;
 }
 
-.login {
+.signup {
     width: 42vh;
-    height: 50vh;
+    height: 46vh;
     background-color: #ffffff;
     box-shadow: 1vh 1vh rgba(20, 20, 20, 0.726);
     border-radius: 5vh;
@@ -16,7 +16,7 @@ body {
     overflow: hidden;
 }
 
-.login h1 {
+.signup h1 {
     text-align: center;
     color: #5b6574;
     font-size: 4vh;
@@ -24,14 +24,14 @@ body {
     border-bottom: 0.5vh solid #dee0e4;
 }
 
-.login form {
+.signup form {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     padding-top: 3vh;
 }
 
-.login form label {
+.signup form label {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,8 +41,8 @@ body {
     color: #ffffff;
 }
 
-.login form input[type="password"],
-.login form input[type="text"] {
+.signup form input[type="password"],
+.signup form input[type="text"] {
     width: 30vh;
     height: 7vh;
     border: 0.5vh solid #dee0e4;
@@ -50,7 +50,7 @@ body {
     padding: 0 2vh;
 }
 
-.login form input[type="submit"] {
+.signup form input[type="submit"] {
     width: 100%;
     padding: 2vh;
     margin-top: 2.6vh;
@@ -62,12 +62,12 @@ body {
     transition: background-color 0.2s;
 }
 
-.login form input[type="submit"]:hover {
+.signup form input[type="submit"]:hover {
     background-color: rgb(94, 146, 46);
     transition: background-color 0.2s;
 }
 
-.login a {
+.signup a {
     width: 36%;
     padding: 1vh;
     margin-top: 1vh;
@@ -83,7 +83,7 @@ body {
     text-decoration: none;
 }
 
-.login a:hover {
+.signup a:hover {
     background-color: rgb(94, 146, 46);
     transition: background-color 0.2s;
 }
