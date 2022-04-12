@@ -12,7 +12,7 @@
             <% if (session.loggedin) { %>
             <%- include('./partials/newPost') %>
             <% } %>
-            <% posts.slice().reverse().forEach((post)=> {%>
+            <% posts.forEach((post)=> {%>
                 <div class="post-container">
                     <div class="post-image-container">
                         <img class="post-image" src=<%=post.img_name %>>

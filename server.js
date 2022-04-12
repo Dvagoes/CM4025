@@ -12,6 +12,7 @@ var session = require('express-session')
 const cookieParser = require('cookie-parser')
 var ObjectId = require('mongodb').ObjectId;
 var formidable = require('formidable')
+const crypto = require('crypto');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,6 +25,9 @@ app.use(session({
 }));
 app.use(express.json());
 
+
+
+
 const mClient = require('mongodb').MongoClient;
 
 mClient.connect(process.env.uri, function (err, client) {
@@ -35,7 +39,7 @@ mClient.connect(process.env.uri, function (err, client) {
 });
 
 app.get('/', function (req, res) {
-    db.collection('Posts').find(req.body).toArray(function (err, result) {
+    db.collection('Posts').find(req.body).sort({ datetime: -1 }).toArray(function (err, result) {
         if (err) throw err;
         posts = JSON.parse(JSON.stringify(result));
         if (req.session.loggedin) {
@@ -74,7 +78,7 @@ app.get('/game', function (req, res) {
 app.get('/profile', function (req, res) {
     if (req.session.loggedin) {
         id = new ObjectId(req.session.userid);
-        db.collection('UserData').findOne({ "_id": id }).toArray(function (err, result) {
+        db.collection('UserData').findOne({ "_id": id }, function (err, result) {
             if (err) throw err;
             user = JSON.parse(JSON.stringify(result));
             res.render('profile', {
@@ -95,7 +99,7 @@ app.get("/getUserData", function (req, res) {
 });
 
 app.get("/getPosts", function (req, res) {
-    db.collection('Posts').find(req.body).toArray(function (err, result) {
+    db.collection('Posts').find(req.body).sort({ datetime: -1 }).toArray(function (err, result) {
         if (err) throw err;
         res.send(JSON.stringify(result));
     });
@@ -138,17 +142,28 @@ app.post('/newUser', function (request, response) {
     // Capture the input fields
     let username = request.body.username;
     let password = request.body.password;
+
     // Ensure the input fields exists and are not empty
     if (username && password) {
-        // Execute SQL query that'll select the account from the database based on the specified username and password
-        db.collection("UserData").insertOne({
-            username: username,
-            password: password,
-            admin: false
-        }, function (error, result) {
-            if (error) throw error;
-            console.log("new user added")
-        });
+        db.collection("UserData").find({ username: username }, function (err, res) {
+            if (err) throw err;
+
+            if (res.length > 0) {
+                response.send("User already exists");
+            } else {
+                db.collection("UserData").insertOne({
+                    username: username,
+                    password: password,
+                    admin: false,
+                    posts: 0,
+                    score: 0,
+                    likes: []
+                }, function (error, result) {
+                    if (error) throw error;
+                    console.log("new user added", username)
+                });
+            }
+        })
     } else {
         response.send('Please enter Username and Password!');
         response.end();
@@ -165,6 +180,10 @@ app.post('/logout', function (req, res) {
 
 app.get('/login', function (req, res) {
     res.render('./login');
+});
+
+app.get('/signup', function (req, res) {
+    res.render('./signup');
 });
 
 app.post('/like/:_id', function (req, res) {
@@ -252,12 +271,11 @@ app.post('/newPost', function (request, response) {
                         let post_title = fields.title;
                         let score = 0;
                         let dt = new Date()
-                        let datetime = dt.toISOString();
                         // Ensure the input fields exists and are not empty
                         if (username && post_title && img_name) {
                             // Execute SQL query that'll select the account from the database based on the specified username and password
                             db.collection("Posts").insertOne({
-                                datetime: datetime,
+                                datetime: dt,
                                 post_title: post_title,
                                 img_name: img_name,
                                 score: score,
@@ -298,14 +316,13 @@ app.post('/addComment/:_id', function (req, res) {
                     if (result) {
                         let content = req.body.comment;
                         let dt = new Date()
-                        let datetime = dt.toISOString();
                         if (content) {
                             db.collection("Posts").updateOne(q, {
                                 "$push":
                                 {
                                     comments: {
                                         username: username,
-                                        datetime: datetime,
+                                        datetime: dt,
                                         content: content
                                     }
                                 }
@@ -335,3 +352,5 @@ app.post('/addComment/:_id', function (req, res) {
     }
 
 });
+
+// adapted from https://blog.logrocket.com/node-js-crypto-module-a-tutorial/
