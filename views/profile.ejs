@@ -3,11 +3,34 @@
 
 <head>
     <title>Justice for Ugly Animals - Home</title>
-    <link rel="stylesheet" type="text/css" href="./stylesheets/post.css">
+    <link rel="stylesheet" type="text/css" href="./stylesheets/profile.css">
 </head>
 
 <body>
     <%- include('./partials/header') %>
+    <div class="profile">
+        <div class="info">
+            
+        </div>
+        <div class="options">
+            <form class="delete">
+                <input type="submit" value="Delete Acccount"
+                formaction="/deleteUser" formmethod="post">
+                <input type="submit" value="Delete Likes"
+                formaction="/deleteLikes" formmethod="post">
+                <input type="submit" value="Delete Posts"
+                formaction="/deletePosts" formmethod="post">
+            </form>
+            <form class="change-username" action="/changeUsername" method="post">
+                <input type="text">
+                <input type="submit" value="Change Username">
+            </form>
+            <form class="change-password" action="/changePassword" method="post">
+                <input type="password">
+                <input type="submit" value="Change Password">
+            </form>
+        </div>
+    </div>
     <%- include('./partials/footer') %>
 </body>
 </html>

@@ -66,13 +66,24 @@ app.get('/', function (req, res) {
 
 app.get('/game', function (req, res) {
     db.collection('Posts').find(req.body).toArray(function (err, result) {
+        if (err) throw err;
 
         posts = JSON.parse(JSON.stringify(result));
-        res.render('game', {
-            posts: posts,
-            session: req.session
-        });
+
+        db.collection('UserData').find({}, {score: 1, username: 1, _id: 0})
+        .sort({score: 1}).limit(10).toArray(function (err, result) {
+            if(err) throw err;
+
+            topscores = JSON.parse(JSON.stringify(result));
+            res.render('game', {
+                posts: posts,
+                session: req.session,
+                topscores: topscores
+            });
+        })
+        
     });
+    
 });
 
 app.get('/profile', function (req, res) {

@@ -8,6 +8,60 @@
 
 <body>
     <%- include('./partials/header') %>
-    <%- include('./partials/footer') %>
+
+        <div class="game-container">
+
+            <div class="highscores">
+                <table>
+                    <tr>
+                        <h1>Highscores</h1>
+                    </tr>
+                    <tr>
+                        <th>
+                            User
+                        </th>
+                        <th>
+                            Score
+                        </th>
+                    </tr>
+                    <%topscores.forEach((topscore)=> {%>
+                        <tr>
+                            <td>
+                                <%=topscore.username%>
+                            </td>
+                            <td>
+                                <%=topscore.score%>
+                            </td>
+                        </tr>
+                    <%});%>
+                </table>
+            </div>
+
+            <div class="game">
+                <div id="panel_0" class="panel">
+                    <img src="<%=//some fucky js shit%>">
+                </div>
+                <div id="panel_1" class="panel">
+                    <img src="<%=//some fucky js shit%>">
+                </div>
+                <div class="game-interface">
+                    <button id="higher">Higher</button>
+                    <p>Score : <%= //score%>
+                    </p>
+                    <button id="lower">Lower</button>
+                </div>
+            </div>
+
+        </div>
+
+        <%- include('./partials/footer') %>
 </body>
+
 </html>
+
+<script>
+    //game logic functions here
+    function startGame(userid) {
+
+    }
+</script>
