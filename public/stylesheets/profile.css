@@ -2,27 +2,3 @@
     padding: 0;
     margin: 0;
 }
-
-.game-container {
-
-}
-
-.highscores {
-
-}
-
-td {
-    text-align: right;
-}
-
-.game {
-
-}
-
-.panel {
-
-}
-
-.panel:hover {
-    /*have panel darken*/
-}
