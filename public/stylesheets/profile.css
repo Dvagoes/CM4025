@@ -3,9 +3,92 @@
     margin: 0;
 }
 
+.options {}
+
+.panel {
+    display: block;
+    border-radius: 4vh;
+    background-color: rgb(241, 218, 155);
+    overflow: hidden;
+
+    float: left;
+
+    margin-top: 5vh;
+    margin-left: 1.5vw;
+    margin-right: 1.5vw;
+    width: 30vw;
+    height: 50vh;
+}
+
+form input[type='submit']{
+    width: 28vw;
+    height: 3vw;
+    font-size: 1.6vw;
+    background-color: rgb(135, 196, 78);
+    border: 0;
+    border-radius: 4vh;
+    margin-top: 3vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    padding: 0 2vh;
+}
 
 
-.info {}
+form input[type='text'],
+form input[type='password'] {
+    width: 25.5vw;
+    height: 3vw;
+    font-size: 4vh;
+    border: 0.5vh solid #dee0e4;
+    margin-top: 3vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    padding: 0 2vh;
+}
+
+form input[type="submit"]:hover {
+    background-color: rgb(94, 146, 46);
+    transition: background-color 0.2s;
+}
+
+form input[value='Logout'] {
+    width: 16vw;
+}
+
+form .user-actions {}
+
+form .user-actions input[type='submit'] {}
+
+form .change-username {}
+
+form .change-password {}
+
+
+.info {
+    display: block;
+    border-radius: 4vh;
+    background-color: rgb(241, 218, 155);
+    overflow: hidden;
+
+    float: left;
+    margin-top: 5vh;
+    margin-left: 8vw;
+    margin-right: 1.5vw;
+    width: 18vw;
+    height: 50vh;
+
+    font-size: 2.4vh;
+}
+
+.info table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2vh;
+}
+
+td {
+    height: ;
+}
 
 td:nth-child(odd) {
     font-weight: bold;
@@ -13,10 +96,7 @@ td:nth-child(odd) {
 }
 
 td:nth-child(even) {
-    font-weight: bold;
     text-align: center;
     padding-left: 5%;
     text-transform: uppercase;
 }
-
-.options {}

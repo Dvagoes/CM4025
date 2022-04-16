@@ -19,14 +19,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('./public'));
 app.use(cookieParser())
 app.use(session({
-    secret: 'replace me',
+    secret: 'secret',
     resave: true,
     saveUninitialized: true
 }));
 app.use(express.json());
-
-
-
 
 const mClient = require('mongodb').MongoClient;
 
@@ -129,22 +126,32 @@ app.post('/auth', function (request, response) {
         // Execute SQL query that'll select the account from the database based on the specified username and password
         db.collection("UserData").findOne({
             username: username,
-            password: password
-        },function (error, result) {
+        }, function (error, user) {
             // If there is an issue with the query, output the error
             if (error) throw error;
             // If the account exists
-            if (result) {
+            if (user) {
                 // Authenticate the user
-                request.session.loggedin = true;
-                request.session.userid = result._id;
-                if (result.admin) {
-                    request.session.admin = true;
+
+                hash = user.hash;
+                salt = user.salt;
+
+                key = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`)
+                passHash = key.toString('hex')
+
+                if (passHash === hash) {
+                    request.session.loggedin = true;
+                    request.session.userid = user._id;
+                    if (user.admin) {
+                        request.session.admin = true;
+                    }
+                    // Redirect to home page
+                    response.redirect('/');
+                } else {
+                    response.send('Incorrect Password!');
                 }
-                // Redirect to home page
-                response.redirect('/');
             } else {
-                response.send('Incorrect Username and/or Password!');
+                response.send('Incorrect Username!');
             }
             response.end();
         });
@@ -169,14 +176,14 @@ app.post('/newUser', function (request, response) {
             } else {
                 db.collection("UserData").insertOne({
                     username: username,
-                    password: password,
                     admin: false,
                     posts: 0,
                     score: 0,
                     likes: []
                 }, function (error, result) {
                     if (error) throw error;
-                    console.log("new user added", username)
+                    userid = result.insertedId;
+                    setPassword(password, userid);
                 });
             }
         })
@@ -496,13 +503,9 @@ app.post('/changeUsername', function (req, res) {
 app.post('/changePassword', function (req, res) {
     if (req.session.loggedin) {
         let newpass = req.body.password;
-        let userid = new ObjectId(req.session.userid);
-        let q = { "user": userid };
-
-        db.collection("UserData").updateOne(q, {$set: {password: newpass}}, function (err, user) {
-            if (err) throw err;
-            res.redirect('back')
-        })
+        let userid = new ObjectId(req.sessionuserid);
+        setPassword(newpass, userid);
+        res.redirect('/')
     } else {
         res.redirect('/login');
     }
@@ -516,14 +519,39 @@ app.post('/newScore/:score', function (req, res) {
         db.collection("UserData").findOne(q, function (err, user) {
             if (err) throw err;
             if (user.score < newscore) {
-                db.collection("UserData").updateOne(q, {$set: {score: newscore}}, function (err, user) {
+                db.collection("UserData").updateOne(q, { $set: { score: newscore } }, function (err, user) {
                     if (err) throw err;
                     res.end()
                 })
-            } 
+            }
             res.end()
         })
     } else {
         res.end()
     }
 })
+
+function setPassword(password, userid) {
+    salt = crypto.randomBytes(16).toString('hex');
+    hash = crypto.pbkdf2Sync(password, salt,
+        1000, 64, `sha512`).toString(`hex`);
+    let q = { "_id": userid };
+    db.collection("UserData").updateOne(q,
+        {
+            $set:
+            {
+                hash: hash,
+                salt: salt
+            }
+        },
+        function (err, obj) {
+            if (err) throw err;
+            if (obj) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    )
+
+}
