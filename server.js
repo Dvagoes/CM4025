@@ -104,7 +104,9 @@ app.get('/profile', function (req, res) {
 app.get("/getUserData", function (req, res) {
     db.collection('UserData').find(req.body).toArray(function (err, result) {
         if (err) throw err;
-        res.send(JSON.stringify(result));
+        users = JSON.stringify(result.map(({_id, username, score, likes}), ({_id, username, score, likes})));
+
+        res.send(users);
     });
 });
 
