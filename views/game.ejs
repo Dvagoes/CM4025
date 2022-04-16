@@ -3,6 +3,7 @@
 
 <head>
     <title>Justice for Ugly Animals - Game</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./stylesheets/game.css">
 </head>
 
@@ -11,45 +12,51 @@
 
         <div class="game-container">
 
-            <div class="highscores">
-                <table>
-                    <tr>
-                        <h1>Highscores</h1>
-                    </tr>
-                    <tr>
-                        <th>
-                            User
-                        </th>
-                        <th>
-                            Score
-                        </th>
-                    </tr>
-                    <%topscores.forEach((topscore)=> {%>
-                        <tr>
-                            <td>
-                                <%=topscore.username%>
-                            </td>
-                            <td>
-                                <%=topscore.score%>
-                            </td>
-                        </tr>
-                    <%});%>
-                </table>
-            </div>
-
             <div class="game">
+                <div class="game-header">
+                    Pick the Best!
+                </div>
                 <div id="panel_0" class="panel">
-                    <img src="<%=//some fucky js shit%>">
+                    <img id="img_l">
                 </div>
                 <div id="panel_1" class="panel">
-                    <img src="<%=//some fucky js shit%>">
+                    <img id="img_r">
                 </div>
                 <div class="game-interface">
-                    <button id="higher">Higher</button>
-                    <p>Score : <%= //score%>
+                    <p id="score">Score : 0
                     </p>
-                    <button id="lower">Lower</button>
                 </div>
+            </div>
+
+            <div class="highscores">
+                <p id="table-lable">
+                    Highscores
+                </p>
+                <table>
+                    <thead id="table-header">
+                        <tr>
+                            <th>
+                                User
+                            </th>
+                            <th>
+                                Score
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <%topscores.forEach((topscore)=> {%>
+                            <tr>
+                                <td>
+                                    <%=topscore.username%>
+                                </td>
+                                <td>
+                                    <%=topscore.score%>
+                                </td>
+                            </tr>
+                            <%});%>
+                    </tbody>
+                </table>
             </div>
 
         </div>
@@ -60,12 +67,74 @@
 </html>
 
 <script>
-    //game logic functions here
-    function startGame(userid) {
-        // select initial post at random
-        // select next post at random
-        // check they arent the same
-        // set panel 0 and 1 with the posts (img, and title)
-        //
-    }
+    $(document).ready(function () {
+
+        var posts = [];
+        var score;
+        var i, j;
+        startGame()
+
+        function startGame() {
+            console.log("Starting Game...")
+            var request = new XMLHttpRequest();
+
+            request.open('GET', '/getPosts', true);
+
+            request.onload = function () {
+                posts = JSON.parse(this.response);
+
+                i = Math.floor(Math.random() * posts.length);
+                do {
+                    j = Math.floor(Math.random() * posts.length);
+                } while (j === i)
+                score = 0
+                loadRound()
+            }
+            request.send()
+        }
+
+        function nextImage() {
+            i = j
+            do {
+                j = Math.floor(Math.random() * posts.length);
+            } while (j === i)
+            loadRound();
+        }
+
+        function loadRound() {
+            $('#img_l').attr("src", posts[i].img_name)
+            $('#img_r').attr("src", posts[j].img_name)
+            $('#score').text("Score : " + score)
+        }
+
+        $('#panel_1').click(function () {
+            if (posts[i].score >= posts[j].score) {
+                score++
+                nextImage()
+            } else {
+                endGame()
+            }
+        })
+
+        $('#panel_0').click(function () {
+            if (posts[i].score <= posts[j].score) {
+                score++
+                nextImage()
+            } else {
+                endGame()
+            }
+        })
+
+        function endGame() {
+            console.log("Ending Game");
+            req = new XMLHttpRequest();
+            req.open('POST', '/newScore/' + score);
+            req.onload = function () {
+                location.reload()
+            }
+            req.send()
+        }
+    })
+
+
 </script>

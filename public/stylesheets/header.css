@@ -19,6 +19,7 @@
     top: 0;
     padding: 0;
     background-color: rgb(135, 196, 78);
+    z-index: 5;
 }
 
 .navbutton {
