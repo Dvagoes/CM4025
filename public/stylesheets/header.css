@@ -9,7 +9,7 @@
     background-color: rgb(135, 196, 78);
     text-align: center;
 
-    font-size: 5vw;
+    font-size: 4.8vw;
     font-weight: bolder;
 }
 .navbar {
@@ -24,13 +24,13 @@
 
 .navbutton {
     display: inline-block;
-    height: 6vh;
+    height: 2.8vw;
     width: 30vw;
     background-color: rgb(135, 196, 78);
     transition: background-color 0.2s;
 
     text-align: center;
-    font-size: 4vh;
+    font-size: 2.2vw;
     color: rgb(22, 21, 21);
 }
 
