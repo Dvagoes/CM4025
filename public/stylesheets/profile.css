@@ -3,8 +3,6 @@
     margin: 0;
 }
 
-.options {}
-
 .panel {
     display: block;
     border-radius: 4vh;
@@ -55,15 +53,6 @@ form input[value='Logout'] {
     width: 16vw;
 }
 
-form .user-actions {}
-
-form .user-actions input[type='submit'] {}
-
-form .change-username {}
-
-form .change-password {}
-
-
 .info {
     display: block;
     border-radius: 4vh;
@@ -84,10 +73,6 @@ form .change-password {}
     margin-left: auto;
     margin-right: auto;
     margin-top: 2vh;
-}
-
-td {
-    height: ;
 }
 
 td:nth-child(odd) {
