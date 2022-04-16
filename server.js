@@ -70,20 +70,20 @@ app.get('/game', function (req, res) {
 
         posts = JSON.parse(JSON.stringify(result));
 
-        db.collection('UserData').find({}, {score: 1, username: 1, _id: 0})
-        .sort({score: 1}).limit(10).toArray(function (err, result) {
-            if(err) throw err;
+        db.collection('UserData').find({}, { score: 1, username: 1, _id: 0 })
+            .sort({ score: -1 }).limit(10).toArray(function (err, result) {
+                if (err) throw err;
 
-            topscores = JSON.parse(JSON.stringify(result));
-            res.render('game', {
-                posts: posts,
-                session: req.session,
-                topscores: topscores
-            });
-        })
-        
+                topscores = JSON.parse(JSON.stringify(result));
+                res.render('game', {
+                    posts: posts,
+                    session: req.session,
+                    topscores: topscores
+                });
+            })
+
     });
-    
+
 });
 
 app.get('/profile', function (req, res) {
@@ -93,7 +93,9 @@ app.get('/profile', function (req, res) {
             if (err) throw err;
             user = JSON.parse(JSON.stringify(result));
             res.render('profile', {
-                user: user,
+                username: user.username,
+                likes: user.likes,
+                score: user.score,
                 session: req.session
             });
         });
@@ -125,17 +127,20 @@ app.post('/auth', function (request, response) {
     // Ensure the input fields exists and are not empty
     if (username && password) {
         // Execute SQL query that'll select the account from the database based on the specified username and password
-        db.collection("UserData").find({
+        db.collection("UserData").findOne({
             username: username,
             password: password
-        }).toArray(function (error, results) {
+        },function (error, result) {
             // If there is an issue with the query, output the error
             if (error) throw error;
             // If the account exists
-            if (results.length > 0) {
+            if (result) {
                 // Authenticate the user
                 request.session.loggedin = true;
-                request.session.userid = results[0]._id;
+                request.session.userid = result._id;
+                if (result.admin) {
+                    request.session.admin = true;
+                }
                 // Redirect to home page
                 response.redirect('/');
             } else {
@@ -185,6 +190,9 @@ app.post('/logout', function (req, res) {
     if (req.session.userid) {
         delete req.session.userid;
         req.session.loggedin = false;
+        if (req.session.admin) {
+            delete req.session.admin;
+        }
         res.redirect('back')
     }
 });
@@ -364,4 +372,158 @@ app.post('/addComment/:_id', function (req, res) {
 
 });
 
-// adapted from https://blog.logrocket.com/node-js-crypto-module-a-tutorial/
+app.post('/deleteCurrentUser', function (req, res) {
+    if (req.session.loggedin) {
+        userid = new ObjectId(req.session.userid);
+        let q = { "_id": userid };
+        db.collection("UserData").findOne(q, function (err, user) {
+            if (err) throw err;
+            username = user.username;
+            let q = { "username": username };
+            db.collection("Posts").deleteMany(q, function (err, obj) {
+                if (err) throw err;
+                let q = { comments: { "username": username } };
+                db.collection("Posts").update({}, { $pull: { q } }, function (err, obj) {
+                    if (err) throw err;
+                    likes = user.likes;
+                    likes.forEach(like => {
+                        let q = { "_id": like };
+                        db.collection("Posts").findOne(q, function (err, result) {
+                            if (err) throw err;
+                            if (result) {
+                                newscore = result.score - 1;
+                                db.collection("Posts").updateOne(q, { $set: { score: newscore } }, function (err, result) {
+                                    if (err) throw err;
+                                })
+                            }
+                        })
+                    });
+                    db.collection("UserData").deleteOne(q, function (err, obj) {
+                        if (err) throw err;
+                        delete req.session.userid;
+                        req.session.loggedin = false;
+                        res.redirect('/');
+                    })
+                })
+            })
+        })
+    } else {
+        res.redirect('/login')
+    }
+
+})
+
+app.post('/deleteUserPosts/:userid', function (req, res) {
+    userid = new ObjectId(req.params.userid);
+    let q = { "userid": userid };
+    db.collection("UserData").findOne(q, function (err, obj) {
+        if (err) throw err;
+        username = obj.username;
+
+        let q = { "username": username };
+        db.collection("Posts").deleteMany(q, function (err, obj) {
+            if (err) throw err;
+            res.redirect('back');
+        })
+    })
+
+})
+
+app.post('/deleteUserComments/:userid', function (req, res) {
+    userid = new ObjectId(req.params.userid);
+    let q = { comments: { "userid": userid } };
+    db.collection("UserData").update({}, { $pull: { q } }, function (err, obj) {
+        if (err) throw err;
+        username = obj.username;
+        let q = { comments: { "username": username } };
+        db.collection("Posts").deleteMany(q, function (err, obj) {
+            if (err) throw err;
+            res.redirect('back');
+        })
+    })
+})
+
+app.post('/deleteUserLikes/:userid', function (req, res) {
+    userid = new ObjectId(req.params.userid);
+    let q = { "userid": userid };
+    db.collection("UserData").find(q, function (err, obj) {
+        if (err) throw err;
+        likes = obj.likes;
+
+        likes.forEach(like => {
+            let q = { "_id": like };
+            db.collection("Posts").findOne(q, function (err, result) {
+                if (err) throw err;
+                if (result) {
+                    newscore = result.score - 1;
+                    db.collection("Posts").updateOne(q, { $set: { score: newscore } }, function (err, result) {
+                        if (err) throw err;
+                    })
+                }
+            })
+        });
+
+        res.redirect('back');
+    })
+
+})
+
+app.post('/changeUsername', function (req, res) {
+    if (req.session.loggedin) {
+        let newname = req.body.username;
+        let userid = new ObjectId(req.session.userid);
+        let q = { "user": userid };
+
+        db.collection("UserData").findOne(q, function (err, user) {
+            if (err) throw err;
+
+            oldname = user.username;
+            let q = { "username": username };
+            db.collection("Posts").updateMany(q, { $set: { username: newname } }, function (err, obj) {
+                if (err) throw err;
+                let q = { "user": userid };
+                db.collection("UserData").updateOne(q, { $set: { username: newname } }, function (err, obj) {
+                    if (err) throw err;
+                    res.redirect('back');
+                })
+            })
+        })
+    } else {
+        res.redirect('/login');
+    }
+})
+
+app.post('/changePassword', function (req, res) {
+    if (req.session.loggedin) {
+        let newpass = req.body.password;
+        let userid = new ObjectId(req.session.userid);
+        let q = { "user": userid };
+
+        db.collection("UserData").updateOne(q, {$set: {password: newpass}}, function (err, user) {
+            if (err) throw err;
+            res.redirect('back')
+        })
+    } else {
+        res.redirect('/login');
+    }
+})
+
+app.post('/newScore/:score', function (req, res) {
+    if (req.session.loggedin) {
+        let newscore = parseInt(req.params.score);
+        let userid = new ObjectId(req.session.userid);
+        let q = { "_id": userid };
+        db.collection("UserData").findOne(q, function (err, user) {
+            if (err) throw err;
+            if (user.score < newscore) {
+                db.collection("UserData").updateOne(q, {$set: {score: newscore}}, function (err, user) {
+                    if (err) throw err;
+                    res.end()
+                })
+            } 
+            res.end()
+        })
+    } else {
+        res.end()
+    }
+})

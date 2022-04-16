@@ -2,3 +2,21 @@
     padding: 0;
     margin: 0;
 }
+
+
+
+.info {}
+
+td:nth-child(odd) {
+    font-weight: bold;
+    text-align: right;
+}
+
+td:nth-child(even) {
+    font-weight: bold;
+    text-align: center;
+    padding-left: 5%;
+    text-transform: uppercase;
+}
+
+.options {}
